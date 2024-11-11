@@ -6,17 +6,19 @@ from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 import numpy as np
 
+# For Apple Silicon, use the MPS backend if available
+# Change to "cuda" if using an NVIDIA GPU
 device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 print(f"Using device: {device}")
 
 def show_predictions(model, test_loader):
     model.eval()  # Set the model to evaluation mode
-    images, labels = next(iter(test_loader))  # Get a batch of test images
+    images, labels = next(iter(test_loader))  
     
-    # Move images and labels to device
+    
     images, labels = images.to(device), labels.to(device)
     
-    with torch.no_grad():  # No need for gradients during inference
+    with torch.no_grad():  
         outputs = model(images)
         _, predictions = torch.max(outputs, 1)
     
@@ -57,7 +59,7 @@ class MNISTClassifier(nn.Module):
 if __name__ == "__main__":
 
 
-    # Define transformations for the dataset (convert to tensor and normalize)
+    # Define transformations for the dataset 
     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
 
     # Download and load the training data
@@ -78,7 +80,7 @@ if __name__ == "__main__":
     # Set model to training mode
     model.train()
 
-    # Number of epochs
+   
     epochs = 50
 
     for epoch in range(epochs):
@@ -87,7 +89,6 @@ if __name__ == "__main__":
 
             images, labels = images.to(device), labels.to(device)
         
-            # Zero the gradients
             optimizer.zero_grad()
             
             # Forward pass
@@ -102,16 +103,16 @@ if __name__ == "__main__":
 
         print(f"Epoch [{epoch+1}/{epochs}], Loss: {running_loss/len(train_loader):.4f}")
 
-    torch.save(model.state_dict(), 'deep_learning/models/mnist_model_20.pth')
+    torch.save(model.state_dict(), 'models/mnist_model_50.pth')
 
 
-    # # Set model to evaluation mode
+    # Set model to evaluation mode
     model.eval()
 
     correct = 0
     total = 0
 
-    with torch.no_grad():  # Disable gradient computation for inference
+    with torch.no_grad():  
         for images, labels in test_loader:
             images, labels = images.to(device), labels.to(device)
             outputs = model(images)
@@ -121,9 +122,3 @@ if __name__ == "__main__":
 
     accuracy = 100 * correct / total
     print(f'Accuracy on the test set: {accuracy:.2f}%')
-
-    # Function to display images with predictions
-
-
-    # Call the function to display predictions
-    # show_predictions(model, test_loader)
